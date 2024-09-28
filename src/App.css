@@ -1,0 +1,21 @@
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    border: 1px solid black;
+    width: 30%;
+    height: 80dvh;
+    margin: 40px auto;
+    padding: 20px;
+}
+.chat-window-container {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+}
+.chat-window-container::-webkit-scrollbar {
+    display: none;
+}
