@@ -1,14 +1,14 @@
 /* eslint-disable react/prop-types */
-import './ChatMessage.css';
+import { MessageWrapper } from "../styles/chatMessage.styles";
 
 const ChatMessage = ({ newMessage }) => {
-    return (
-        newMessage ? (
-            <article className={`chat-message ${newMessage.is_sent ? 'sent' : 'received'}`}>
-                {newMessage.content}
-            </article>
-        ) : null
-    );
+  return (
+    newMessage ? (
+      <MessageWrapper isSent={newMessage.is_sent}>
+        {newMessage.content}
+      </MessageWrapper>
+    ) : null
+  );
 }
 
 export default ChatMessage;
