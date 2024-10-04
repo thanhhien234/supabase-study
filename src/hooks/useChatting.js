@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import supabase from "../supabaseClient";
 
 function useChatting() {
-  const [messages, setMessages] = useState([]);  
   const [newMessage, setNewMessage] = useState(""); 
+  const [items, setItems] = useState([]);  
 
-  const sendMessage = async () => {
+  const sendMessage = () => {
     if (newMessage.trim() === "") return; 
 
     const newMessageObj = {
@@ -24,37 +24,48 @@ function useChatting() {
             }
             console.log(data);
             setNewMessage("");
-            getMessages(); 
+            getDatas();
         })
         .catch((err) => {
             alert(err.message);
         });
   };
 
-  function getMessages() {
-    supabase
+  const getDatas = async () => {
+    const { data: messages, error: messagesError } = await supabase
       .from('chats')
       .select()
-      .range(0, 50)
-      .order('created_at', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) {
-          alert(error.message);
-          return;
-        }
-        setMessages(data);
-      })
-      .catch((err) => {
-        alert(err.message);
-      });
+      .order('created_at', { ascending: true });
+
+    if (messagesError) {
+      alert(messagesError.message);
+      return;
+    }
+
+    const { data: files, error: filesError } = await supabase
+      .from('files')
+      .select()
+      .order('created_at', { ascending: true });
+
+    if (filesError) {
+      alert(filesError.message);
+      return;
+    }
+
+    const data = [
+      ...messages.map(msg => ({ ...msg, type: 'message' })),
+      ...files.map(file => ({ ...file, type: 'file' }))
+    ];
+    data.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    setItems(data);
   }
   
   useEffect(() => { 
-    getMessages();
+    getDatas();
   }, []);
 
   return {
-    messages,
+    items,
     newMessage,
     setNewMessage,
     sendMessage 
